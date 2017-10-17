@@ -1,0 +1,11 @@
+CMAKE_MINIMUM_REQUIRED( VERSION 2.8 )
+PROJECT( nn CXX )
+#SET( CMAKE_VERBOSE_MAKEFILE ON )
+
+INCLUDE_DIRECTORIES("include")
+FILE(GLOB MySources "src/*.cpp")
+ADD_EXECUTABLE( nn ${MySources} )
+
+#install binaries and resources
+#MAKE_EXECUTABLE( "nn" AUTO )
+INSTALL(TARGETS "nn" DESTINATION . ) 
