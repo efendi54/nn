@@ -5,10 +5,6 @@
 #include <vector>
 #include <map>
 
-// TODO:
-// add here best configuration to be able to reproduce best
-// learnings
-
 using namespace std;
 
 template class std::vector<Layer>;
