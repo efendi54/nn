@@ -7,9 +7,6 @@
 
 using namespace std;
 
-template class std::vector<Layer>;
-template class std::vector<double>;
-
 ushort fmax(const DVec &p_Vec)
 {
   return std::distance(p_Vec.begin(), 
