@@ -2,10 +2,7 @@
 #include <vector>
 #include <map>
 
-
 #include "net.h"
-#include "tools.h"
-
 #include "mnist_reader.h"
 
 using namespace std;
