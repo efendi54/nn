@@ -1,6 +1,4 @@
-#include <sstream>
 #include <fstream>
-#include <map>
 #include <algorithm>
 
 #include "mnist_reader.h"
@@ -29,7 +27,7 @@ MNistReader::~MNistReader()
 void MNistReader::ReadImages(const std::string &p_FileName,
                              Data &p_X)
 {
-  ifstream file(p_FileName, std::ios::binary);
+  ifstream file(p_FileName.c_str(), std::ios::binary);
   if(!file.is_open())
     return;
 
@@ -62,7 +60,7 @@ void MNistReader::ReadImages(const std::string &p_FileName,
 void MNistReader::ReadLabels(const std::string &p_FileName,
                              Data &p_Y)
 {
-  ifstream file(p_FileName, std::ios::binary);
+  ifstream file(p_FileName.c_str(), std::ios::binary);
   if(!file.is_open())
     return;
 

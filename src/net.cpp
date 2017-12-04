@@ -1,5 +1,8 @@
-#include "net.h"
 #include <cmath>
+
+#include "net.h"
+#include <stdio.h>
+
 using namespace std;
 
 

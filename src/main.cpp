@@ -1,6 +1,7 @@
 #include <limits>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 #include "net.h"
 #include "mnist_reader.h"
@@ -26,6 +27,27 @@ void CenterData(vector<DVec> &p_XData)
     mean /= p_XData[i].size();
     for(size_t f=0; f<p_XData[i].size(); ++f)
       p_XData[i][f] -= mean;
+  }
+}
+
+// /////////////////
+void ScaleData(vector<DVec> &p_XData)
+{
+  // scale data for each feature (into range [0,1]):
+  DVec maxVec(p_XData[0].size());
+  for(size_t i=0; i<p_XData.size(); ++i)
+  {
+    for(size_t f=0; f<p_XData[i].size(); ++f)
+      if(p_XData[i][f] > maxVec[f])
+        maxVec[f] = p_XData[i][f];
+  }
+  for(size_t i=0; i<p_XData.size(); ++i)
+  {
+    for(size_t f=0; f<p_XData[i].size(); ++f)
+    {
+      if(maxVec[f] > 0)
+        p_XData[i][f] /= maxVec[f];
+    }
   }
 }
 
@@ -66,8 +88,11 @@ int main(int argc, char *argv[])
   cout << "y-data-size = " << YTrainData.size() << endl;
   cout << "x-test-size = " << XTestData.size() << endl;
   cout << "y-test-size = " << YTestData.size() << endl;
-  
- CenterData(XTrainData);
+
+    CenterData(XTrainData);
+  CenterData(XTestData);
+ //ScaleData(XTrainData);
+  //ScaleData(XTestData);  
   size_t iterations = 20,
          train_size = 50000,
          input_size = XTrainData[0].size(),
