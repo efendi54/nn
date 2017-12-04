@@ -12,6 +12,7 @@ struct FFNet
              const std::vector<DVec> &p_Y,
              const ulong p_Iterations=1000);
 
+  void ShowSummedNetOutErr(void);
   double t_LearnRate;
   double t_Momentum;
   std::vector<Layer> t_Layers;

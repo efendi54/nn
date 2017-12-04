@@ -5,8 +5,8 @@
 #include <vector>
 #include <iostream>
 
-
 typedef unsigned short ushort;
 typedef unsigned long ulong;
+typedef std::vector<double> DVec;
 
 

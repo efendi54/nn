@@ -1,9 +1,12 @@
-#include "net.h"
-#include "tools.h"
-
 #include <limits>
 #include <vector>
 #include <map>
+
+
+#include "net.h"
+#include "tools.h"
+
+#include "mnist_reader.h"
 
 using namespace std;
 
@@ -36,12 +39,25 @@ int main(int argc, char *argv[])
   vector<DVec> XTrainData, XTestData;
   vector<DVec> YTrainData, YTestData;
 
+  FileNames trainDataFile; 
+  FileNames testDataFile;
+  XYData trainData; 
+  XYData testData; 
+
+  trainDataFile.first = "datasets/minst/train/train-images-idx3-ubyte";
+  trainDataFile.second = "datasets/minst/train/train-labels-idx1-ubyte";
+  testDataFile.first = "datasets/minst/test/t10k-images-idx3-ubyte";
+  testDataFile.second = "datasets/minst/test/t10k-labels-idx1-ubyte";
+  
   try
   {
-    ReadMnistImages("datasets/minst/train/train-images-idx3-ubyte", XTrainData);
-    ReadMnistLabels("datasets/minst/train/train-labels-idx1-ubyte", YTrainData);
-    ReadMnistImages("datasets/minst/test/t10k-images-idx3-ubyte", XTestData);
-    ReadMnistLabels("datasets/minst/test/t10k-labels-idx1-ubyte", YTestData);
+    MNistReader reader;
+    reader.Read(trainDataFile, trainData);
+    reader.Read(testDataFile, testData);
+    XTrainData = trainData.first;
+    YTrainData = trainData.second;
+    XTestData = testData.first;
+    YTestData = testData.second;
   }
   catch(std::exception &e)
   {
@@ -49,12 +65,12 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-/*  cout << "x-data-size = " << XTrainData.size() << endl;
+  cout << "x-data-size = " << XTrainData.size() << endl;
   cout << "y-data-size = " << YTrainData.size() << endl;
   cout << "x-test-size = " << XTestData.size() << endl;
-  cout << "y-test-size = " << YTestData.size() << endl;*/
+  cout << "y-test-size = " << YTestData.size() << endl;
   
- //CenterData(XTrainData);
+ CenterData(XTrainData);
   size_t iterations = 20,
          train_size = 50000,
          input_size = XTrainData[0].size(),

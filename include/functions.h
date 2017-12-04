@@ -2,6 +2,8 @@
 
 #include "util.h"
 
+typedef double (*Func) (const double &);
+
 double Identity(const double &p_X);
 double DIdentity(const double &p_X);
 double Tanh(const double &p_X);

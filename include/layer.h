@@ -1,9 +1,7 @@
 #pragma once
 
 #include "functions.h"
-
-typedef std::vector<double> DVec;
-typedef double (*Func) (const double &);
+#include "util.h"
 
 // /////////////////
 struct Layer
@@ -21,6 +19,7 @@ struct Layer
   DVec t_Out;
   DVec t_DOut;
   DVec t_Err;
+  DVec t_NetErr;
   DVec t_Bias;
   DVec t_BiasDelta;
 
@@ -30,5 +29,4 @@ struct Layer
   std::vector<DVec> t_Weights;
   std::vector<DVec> t_WeightDeltas;
 };
-
 

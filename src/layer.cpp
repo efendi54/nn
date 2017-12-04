@@ -14,6 +14,7 @@ Layer::Layer(const size_t p_Size,
     t_Out.push_back(0);
     t_DOut.push_back(0);
     t_Err.push_back(0); 
+    t_NetErr.push_back(0); 
     t_Bias.push_back(0);
     t_BiasDelta.push_back(0);
   }
@@ -58,6 +59,7 @@ void Layer::Print(void)
   cout << "I:"; PrintDVec(t_In);
   cout << "O:"; PrintDVec(t_Out);
   cout << "E:"; PrintDVec(t_Err);
+  cout << "NE:"; PrintDVec(t_NetErr);
   cout << "B:"; PrintDVec(t_Bias);
   cout << endl;
   for(ushort w=0; w<t_Weights.size(); ++w)

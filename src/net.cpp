@@ -1,5 +1,5 @@
 #include "net.h"
-
+#include <cmath>
 using namespace std;
 
 
@@ -42,7 +42,10 @@ void FFNet::BackProp(const DVec &p_Y)
     for(ushort ni=0; ni<t_Layers[li].t_Out.size(); ++ni)
     {
       if(isOutLayer)
+      {
+        t_Layers[li].t_NetErr[ni] = abs((p_Y[ni] - t_Layers[li].t_Out[ni]));
         t_Layers[li].t_Err[ni] = (p_Y[ni] - t_Layers[li].t_Out[ni]) * t_Layers[li].t_DOut[ni];
+      }
       else
       {
         double esum = 0;
@@ -71,6 +74,16 @@ void FFNet::BackProp(const DVec &p_Y)
   }
 }
 
+void FFNet::ShowSummedNetOutErr(void)
+{
+  if (t_Layers.empty())
+    return;
+  double nerr = 0;
+  for(size_t i=0; i<t_Layers.back().t_NetErr.size(); ++i)
+    nerr += t_Layers.back().t_NetErr[i];
+  cout << nerr << endl;
+}
+
 void FFNet::Learn(const vector<DVec> &p_X,
                   const vector<DVec> &p_Y,
                   const ulong p_Iterations)
@@ -84,6 +97,7 @@ void FFNet::Learn(const vector<DVec> &p_X,
       Feed(p_X[di]);
       BackProp(p_Y[di]);
     }
+    ShowSummedNetOutErr();
   }
 }
 
