@@ -84,21 +84,22 @@ void FFNet::ShowSummedNetOutErr(void)
   double nerr = 0;
   for(size_t i=0; i<t_Layers.back().t_NetErr.size(); ++i)
     nerr += t_Layers.back().t_NetErr[i];
-  cout << nerr << endl;
+  cout << endl << "summed output-layer-error = " << nerr << endl;
 }
 
 void FFNet::Learn(const vector<DVec> &p_X,
                   const vector<DVec> &p_Y,
                   const ulong p_Iterations)
 {
+  cout << "learning data-size=" << p_X.size() << " iterations= " << p_Iterations << endl;
   for(ulong c=0; c<p_Iterations; ++c)
   {
-    printf("\r%ld percent", (ulong)(100 * ((double)c / (double) p_Iterations)) );
-    fflush(stdout);
     for(size_t di=0; di<p_X.size(); ++di)
     {
       Feed(p_X[di]);
       BackProp(p_Y[di]);
+      printf("\rxi=%d", (int)di+1);
+      fflush(stdout);
     }
     ShowSummedNetOutErr();
   }

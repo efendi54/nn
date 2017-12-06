@@ -11,7 +11,7 @@ using namespace std;
 ushort fmax(const DVec &p_Vec)
 {
   return std::distance(p_Vec.begin(), 
-                        std::max_element(p_Vec.begin(), p_Vec.end()));
+      std::max_element(p_Vec.begin(), p_Vec.end()));
 }
 
 // /////////////////
@@ -52,9 +52,70 @@ void ScaleData(vector<DVec> &p_XData)
 }
 
 // /////////////////
+void NormalizeMean(vector<DVec> &p_XData)
+{
+  DVec meanVec(p_XData[0].size(), 0);
+  DVec maxVec(p_XData[0].size(), std::numeric_limits<short>::min());
+  DVec minVec(p_XData[0].size(), std::numeric_limits<short>::max());
+  for(size_t i=0; i<p_XData.size(); ++i)
+  {
+    for(size_t f=0; f<p_XData[i].size(); ++f)
+    {
+      meanVec[f] += p_XData[i][f];
+      if(p_XData[i][f] > maxVec[f])
+        maxVec[f] = p_XData[i][f];
+      if(p_XData[i][f] < minVec[f])
+        minVec[f] = p_XData[i][f];
+    }
+  }
+
+  for(size_t f=0; f<meanVec.size(); ++f)
+    meanVec[f] /= p_XData.size();
+
+  for(size_t i=0; i<p_XData.size(); ++i)
+  {
+    for(size_t f=0; f<p_XData[i].size(); ++f)
+    {
+      double mean = meanVec[f];
+      double maxDiff = maxVec[f] - minVec[f];
+      p_XData[i][f] = (p_XData[i][f] - mean) / ((maxDiff!=0)?maxDiff:1);
+    }
+  }
+}
+
+// /////////////////
+void Standardize(vector<DVec> &p_XData)
+{
+  DVec meanVec(p_XData[0].size(), 0);
+  for(size_t i=0; i<p_XData.size(); ++i)
+    for(size_t f=0; f<p_XData[i].size(); ++f)
+      meanVec[f] += p_XData[i][f];
+  for(size_t f=0; f<meanVec.size(); ++f)
+    meanVec[f] /= p_XData.size();
+
+  DVec varianceVec(p_XData[0].size(), 0);
+  for(size_t i=0; i<p_XData.size(); ++i)
+    for(size_t f=0; f<p_XData[i].size(); ++f)
+      varianceVec[f] += pow(p_XData[i][f] - meanVec[f], 2);
+  for(size_t f=0; f<varianceVec.size(); ++f)
+  {
+    varianceVec[f] /= p_XData.size()-1;
+    varianceVec[f] = sqrt(varianceVec[f]);
+  }
+
+  for(size_t i=0; i<p_XData.size(); ++i)
+    for(size_t f=0; f<p_XData[i].size(); ++f)
+    {
+      if ((meanVec[f]!=0) && (varianceVec[f]!=0))
+        p_XData[i][f] = (p_XData[i][f] - meanVec[f]) / varianceVec[f];
+    }
+}
+
+// /////////////////
 int main(int argc, char *argv[])
 {
   srand(time(NULL));
+
   vector<DVec> XTrainData, XTestData;
   vector<DVec> YTrainData, YTestData;
 
@@ -67,7 +128,7 @@ int main(int argc, char *argv[])
   trainDataFile.second = "datasets/minst/train/train-labels-idx1-ubyte";
   testDataFile.first = "datasets/minst/test/t10k-images-idx3-ubyte";
   testDataFile.second = "datasets/minst/test/t10k-labels-idx1-ubyte";
-  
+
   try
   {
     MNistReader reader;
@@ -89,33 +150,47 @@ int main(int argc, char *argv[])
   cout << "x-test-size = " << XTestData.size() << endl;
   cout << "y-test-size = " << YTestData.size() << endl;
 
-    CenterData(XTrainData);
-  CenterData(XTestData);
- //ScaleData(XTrainData);
-  //ScaleData(XTestData);  
-  size_t iterations = 20,
-         train_size = 50000,
+  size_t iterations = 1,
+         train_size = 10000,
          input_size = XTrainData[0].size(),
          output_size = YTrainData[0].size(),
          hidden_size = 50;
 
   double learn_rate = 0.3,
          momentum = 0.3;
- 
+
   if(argc>1)
-    iterations = atoi(argv[1]);
-  if(argc>2)
-    learn_rate = atof(argv[2]);
-  if(argc>3)
-    momentum = atof(argv[3]);
-  if(argc>4)
-    train_size = atoi(argv[4]);
+  { 
+    if (atoi(argv[1]) & 0x1)
+    {
+      NormalizeMean(XTrainData);
+      NormalizeMean(XTestData);
+    }
+    if (atoi(argv[1]) & 0x2)
+    {
+      Standardize(XTrainData);
+      Standardize(XTestData);
+    }
+    if (atoi(argv[1]) & 0x4)
+    {
+      ScaleData(XTrainData);
+      ScaleData(XTestData);
+    }
+    if (atoi(argv[1]) & 0x8)
+    {
+      CenterData(XTrainData);
+      CenterData(XTestData);
+    }
+  }
+  if(argc>2) learn_rate = atof(argv[2]);
+  if(argc>3) momentum = atof(argv[3]);
+  if(argc>4) train_size = atoi(argv[4]);
 
   assert(XTrainData.size() == YTrainData.size());
   assert(XTrainData.size()>0 && train_size<=XTrainData.size());
   assert(XTestData.size()>0);
   assert(YTestData.size()>0);
- 
+
   XTrainData = vector<DVec>(XTrainData.begin(), XTrainData.begin() + train_size);
   YTrainData = vector<DVec>(YTrainData.begin(), YTrainData.begin() + train_size);
 
@@ -140,7 +215,7 @@ int main(int argc, char *argv[])
   double acc = (double)(correct)/XTestData.size();
   cout << " accuracy=" << acc << endl;
 
-//  net.Print();
+  //  net.Print();
   return 0;
 }
 
