@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
   cout << "y-test-size = " << YTestData.size() << endl;
 
   size_t iterations = 1,
-         train_size = 10000,
+         train_size = 60000,
          input_size = XTrainData[0].size(),
          output_size = YTrainData[0].size(),
          hidden_size = 50;
