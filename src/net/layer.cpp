@@ -1,7 +1,11 @@
-#include "layer.h"
+#include <assert.h>
+#include <iostream>
+
+#include "net/layer.h"
 
 using namespace std;
 
+// /////////////////
 Layer::Layer(const size_t p_Size, 
              const size_t p_Connections,
              Func p_Func,
@@ -14,7 +18,6 @@ Layer::Layer(const size_t p_Size,
     t_Out.push_back(0);
     t_DOut.push_back(0);
     t_Err.push_back(0); 
-    t_NetErr.push_back(0); 
     t_Bias.push_back(0);
     t_BiasDelta.push_back(0);
   }
@@ -24,6 +27,7 @@ Layer::Layer(const size_t p_Size,
   t_DFunc = p_DFunc;
 }
 
+// /////////////////
 void Layer::Connect(const size_t &p_Connections)
 {
   for(ushort n=0; n<t_In.size(); ++n)
@@ -38,6 +42,7 @@ void Layer::Connect(const size_t &p_Connections)
   }
 }
 
+// /////////////////
 void Layer::Feed(const DVec &p_X)
 {
   for(ushort ni=0; ni<t_In.size(); ++ni)
@@ -54,12 +59,12 @@ void Layer::Feed(const DVec &p_X)
   }
 }
 
+// /////////////////
 void Layer::Print(void)
 {
   cout << "I:"; PrintDVec(t_In);
   cout << "O:"; PrintDVec(t_Out);
   cout << "E:"; PrintDVec(t_Err);
-  cout << "NE:"; PrintDVec(t_NetErr);
   cout << "B:"; PrintDVec(t_Bias);
   cout << endl;
   for(ushort w=0; w<t_Weights.size(); ++w)

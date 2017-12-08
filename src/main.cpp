@@ -3,8 +3,14 @@
 #include <map>
 #include <algorithm>
 
-#include "net.h"
-#include "mnist_reader.h"
+#include <math.h>
+#include <assert.h>
+//#include <vector>
+#include <iostream>
+
+
+#include "net/net.h"
+#include "data/mnist_reader.h"
 
 using namespace std;
 
@@ -33,22 +39,19 @@ void CenterData(vector<DVec> &p_XData)
 // /////////////////
 void ScaleData(vector<DVec> &p_XData)
 {
+  const size_t dataSize = p_XData.size();
+  assert(dataSize>0);
   // scale data for each feature (into range [0,1]):
   DVec maxVec(p_XData[0].size());
   for(size_t i=0; i<p_XData.size(); ++i)
-  {
     for(size_t f=0; f<p_XData[i].size(); ++f)
       if(p_XData[i][f] > maxVec[f])
         maxVec[f] = p_XData[i][f];
-  }
+
   for(size_t i=0; i<p_XData.size(); ++i)
-  {
     for(size_t f=0; f<p_XData[i].size(); ++f)
-    {
       if(maxVec[f] > 0)
         p_XData[i][f] /= maxVec[f];
-    }
-  }
 }
 
 // /////////////////
@@ -144,11 +147,6 @@ int main(int argc, char *argv[])
     cerr << "error during data-parsing:" << e.what() << endl;
     return 1;
   }
-
-  cout << "x-data-size = " << XTrainData.size() << endl;
-  cout << "y-data-size = " << YTrainData.size() << endl;
-  cout << "x-test-size = " << XTestData.size() << endl;
-  cout << "y-test-size = " << YTestData.size() << endl;
 
   size_t iterations = 1,
          train_size = 60000,

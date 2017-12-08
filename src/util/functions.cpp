@@ -1,5 +1,10 @@
 #include <stdlib.h>
-#include "functions.h"
+#include <iostream>
+#include <vector>
+#include <math.h>
+#include <assert.h>
+
+#include "util/functions.h"
 
 using namespace std;
 

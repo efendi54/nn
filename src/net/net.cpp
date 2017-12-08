@@ -1,11 +1,13 @@
 #include <cmath>
-
-#include "net.h"
 #include <stdio.h>
+#include <iostream>
+
+#include "net/net.h"
 
 using namespace std;
 
 
+// /////////////////
 FFNet::FFNet(const std::vector<size_t> &p_Arch) 
 {
   t_LearnRate = 0.3;
@@ -20,6 +22,7 @@ FFNet::FFNet(const std::vector<size_t> &p_Arch)
   }
 }
 
+// /////////////////
 void FFNet::Print(void)
 {
   for(size_t l=0; l<t_Layers.size(); ++l)
@@ -29,6 +32,7 @@ void FFNet::Print(void)
   }
 }
 
+// /////////////////
 void FFNet::Feed(const DVec &p_X)
 {
   t_Layers[0].t_Out = p_X;
@@ -36,6 +40,7 @@ void FFNet::Feed(const DVec &p_X)
     t_Layers[li].Feed(t_Layers[li-1].t_Out);
 }
 
+// /////////////////
 void FFNet::BackProp(const DVec &p_Y)
 {
   // calc errors first
@@ -46,8 +51,8 @@ void FFNet::BackProp(const DVec &p_Y)
     {
       if(isOutLayer)
       {
-        t_Layers[li].t_NetErr[ni] = abs((p_Y[ni] - t_Layers[li].t_Out[ni]));
-        t_Layers[li].t_Err[ni] = (p_Y[ni] - t_Layers[li].t_Out[ni]) * t_Layers[li].t_DOut[ni];
+        t_Layers[li].t_Err[ni] = 
+          (p_Y[ni] - t_Layers[li].t_Out[ni]) * t_Layers[li].t_DOut[ni];
       }
       else
       {
@@ -65,43 +70,38 @@ void FFNet::BackProp(const DVec &p_Y)
     {
       for(ushort wi=0; wi<t_Layers[li].t_Weights[ni].size(); ++wi)
       {
-        const double wdelta = t_LearnRate * t_Layers[li].t_Err[ni] * t_Layers[li-1].t_Out[wi];
-        t_Layers[li].t_Weights[ni][wi] += wdelta + (t_Momentum * t_Layers[li].t_WeightDeltas[ni][wi]);
+        const double wdelta = 
+          t_LearnRate * t_Layers[li].t_Err[ni] * t_Layers[li-1].t_Out[wi];
+        t_Layers[li].t_Weights[ni][wi] += 
+          wdelta + (t_Momentum * t_Layers[li].t_WeightDeltas[ni][wi]);
         t_Layers[li].t_WeightDeltas[ni][wi] = wdelta;
       }
 
       const double biasDelta = t_LearnRate * t_Layers[li].t_Err[ni];
-      t_Layers[li].t_Bias[ni] +=  biasDelta + (t_Momentum * t_Layers[li].t_BiasDelta[ni]);
+      t_Layers[li].t_Bias[ni] +=  
+        biasDelta + (t_Momentum * t_Layers[li].t_BiasDelta[ni]);
       t_Layers[li].t_BiasDelta[ni] = biasDelta;
     }
   }
 }
 
-void FFNet::ShowSummedNetOutErr(void)
-{
-  if (t_Layers.empty())
-    return;
-  double nerr = 0;
-  for(size_t i=0; i<t_Layers.back().t_NetErr.size(); ++i)
-    nerr += t_Layers.back().t_NetErr[i];
-  cout << endl << "summed output-layer-error = " << nerr << endl;
-}
-
+// /////////////////
 void FFNet::Learn(const vector<DVec> &p_X,
                   const vector<DVec> &p_Y,
                   const ulong p_Iterations)
 {
-  cout << "learning data-size=" << p_X.size() << " iterations= " << p_Iterations << endl;
   for(ulong c=0; c<p_Iterations; ++c)
   {
     for(size_t di=0; di<p_X.size(); ++di)
     {
       Feed(p_X[di]);
       BackProp(p_Y[di]);
-      printf("\rxi=%d", (int)di+1);
+      printf("\riteration %ld/%ld, data-item %ld/%ld", c+1, 
+                                                     p_Iterations, 
+                                                     (ulong)di+1, 
+                                                     (ulong)p_X.size());
       fflush(stdout);
     }
-    ShowSummedNetOutErr();
   }
 }
 
