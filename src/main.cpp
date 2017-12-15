@@ -153,28 +153,31 @@ int main(int argc, char *argv[])
          input_size = XTrainData[0].size(),
          output_size = YTrainData[0].size(),
          hidden_size = 50;
+  long scaling_mode = 1;
+  if(argc>1)
+    scaling_mode = atoi(argv[1]);
 
   double learn_rate = 0.3,
          momentum = 0.3;
 
-  if(argc>1)
+  if(scaling_mode)
   { 
-    if (atoi(argv[1]) & 0x1)
+    if (scaling_mode & 0x1)
     {
       NormalizeMean(XTrainData);
       NormalizeMean(XTestData);
     }
-    if (atoi(argv[1]) & 0x2)
+    if (scaling_mode & 0x2)
     {
       Standardize(XTrainData);
       Standardize(XTestData);
     }
-    if (atoi(argv[1]) & 0x4)
+    if (scaling_mode & 0x4)
     {
       ScaleData(XTrainData);
       ScaleData(XTestData);
     }
-    if (atoi(argv[1]) & 0x8)
+    if (scaling_mode & 0x8)
     {
       CenterData(XTrainData);
       CenterData(XTestData);
